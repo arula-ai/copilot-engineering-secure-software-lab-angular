@@ -3,6 +3,7 @@
 **Workshop:** Secure Software Development with GitHub Copilot
 **Duration:** 90 minutes
 **Audience:** Engineers advancing secure coding skills
+**Stack:** Node.js, TypeScript, Express
 
 ---
 

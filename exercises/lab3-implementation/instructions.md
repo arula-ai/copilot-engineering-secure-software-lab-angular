@@ -5,6 +5,21 @@
 
 ---
 
+## How This Lab Works
+
+In this lab, you will **modify the vulnerable code in `src/vulnerable/`** to fix security issues. Use GitHub Copilot to help you understand and implement secure patterns.
+
+### Workflow:
+1. **Open a vulnerable file** from `src/vulnerable/`
+2. **Use Copilot** to generate secure fixes
+3. **Apply fixes** directly to the vulnerable file
+4. **Run tests** to validate your changes: `npm test`
+5. **Compare** your implementation with the reference in `src/secure/` (after completing each task)
+
+> **Note:** The `src/secure/` directory contains reference implementations showing one way to fix the vulnerabilities. Your solution may differ - that's okay! The tests validate secure patterns, not exact code matches.
+
+---
+
 ## Important: Copilot-Only Workflow
 
 All code changes must be made using GitHub Copilot:
@@ -17,13 +32,14 @@ All code changes must be made using GitHub Copilot:
 
 ## Reference Implementations
 
-Secure reference code is available in `src/secure/`:
+Secure reference code is available in `src/secure/` for comparison **after** you complete each task:
 - `src/secure/auth/auth-controller.ts`
-- `src/secure/auth/password-handler.ts`
 - `src/secure/api/payment-handler.ts`
 - `src/secure/api/resource-controller.ts`
+- `src/secure/data/user-repository.ts`
+- `src/secure/session/token-manager.ts`
 
-Use these as models when fixing vulnerable code.
+Use these to validate your approach and learn alternative patterns.
 
 ---
 

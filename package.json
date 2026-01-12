@@ -1,7 +1,7 @@
 {
   "name": "copilot-engineering-secure-software-lab",
   "version": "1.0.0",
-  "description": "",
+  "description": "Hands-on security training lab for identifying and fixing OWASP Top 10 vulnerabilities using GitHub Copilot",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
@@ -9,16 +9,25 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/arula-ai/copilot-engineering-secure-software-lab.git"
+    "url": "git+https://github.com/arula-ai/copilot-engineering-secure-software-lab-angular.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "security",
+    "owasp",
+    "copilot",
+    "training",
+    "typescript",
+    "secure-coding",
+    "vulnerability",
+    "education"
+  ],
+  "author": "Arula AI",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/arula-ai/copilot-engineering-secure-software-lab/issues"
+    "url": "https://github.com/arula-ai/copilot-engineering-secure-software-lab-angular/issues"
   },
-  "homepage": "https://github.com/arula-ai/copilot-engineering-secure-software-lab#readme",
+  "homepage": "https://github.com/arula-ai/copilot-engineering-secure-software-lab-angular#readme",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "express": "^5.2.1",

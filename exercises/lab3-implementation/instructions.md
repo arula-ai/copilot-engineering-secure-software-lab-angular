@@ -1,257 +1,313 @@
-# Lab 3: Implementing Secure Patterns with GitHub Copilot
+# Lab 3: Secure Angular Implementation
 
-**Duration:** 35 minutes
-**Objective:** Fix vulnerabilities identified in Labs 1 & 2 using secure coding patterns.
+**Duration:** 45-60 minutes
+**Objective:** Fix vulnerabilities using AI assistance and secure coding patterns.
+
+---
+
+## Prerequisites
+
+- Completed Labs 1 and 2
+- GitHub Copilot or Claude Code installed
+- Tests baseline: `npm test`
 
 ---
 
 ## How This Lab Works
 
-In this lab, you will **modify the vulnerable code in `src/vulnerable/`** to fix security issues. Use GitHub Copilot to help you understand and implement secure patterns.
-
-### Workflow:
-1. **Open a vulnerable file** from `src/vulnerable/`
-2. **Use Copilot** to generate secure fixes
-3. **Apply fixes** directly to the vulnerable file
-4. **Run tests** to validate your changes: `npm test`
-5. **Compare** your implementation with the reference in `src/secure/` (after completing each task)
-
-> **Note:** The `src/secure/` directory contains reference implementations showing one way to fix the vulnerabilities. Your solution may differ - that's okay! The tests validate secure patterns, not exact code matches.
+1. **Review** vulnerable component in `/vulnerable/*`
+2. **Study** secure counterpart in `/secure/*`
+3. **Use AI** to understand the security patterns
+4. **Run tests** to verify patterns: `npm test`
 
 ---
 
-## Important: Copilot-Only Workflow
+## Task 1: Secure HTML Handling (15 min)
 
-All code changes must be made using GitHub Copilot:
-- Use Copilot Chat for refactoring guidance
-- Use inline Copilot suggestions for code completion
-- Use `#file` references to include context
-- **Do NOT manually type code**
+### Goal
+Implement safe HTML rendering without `bypassSecurityTrustHtml()`
 
----
+### Files
+- Vulnerable: `src/app/vulnerable/components/xss-bypass/`
+- Secure: `src/app/secure/components/xss-bypass/`
 
-## Reference Implementations
-
-Secure reference code is available in `src/secure/` for comparison **after** you complete each task:
-- `src/secure/auth/auth-controller.ts`
-- `src/secure/api/payment-handler.ts`
-- `src/secure/api/resource-controller.ts`
-- `src/secure/data/user-repository.ts`
-- `src/secure/session/token-manager.ts`
-
-Use these to validate your approach and learn alternative patterns.
-
----
-
-## Task 1: Secure Authentication (10 min)
-
-**File:** `src/vulnerable/auth/auth-controller.ts`
-
-**Copilot Chat Prompt:**
+### AI Prompt
 ```
-#file:src/vulnerable/auth/auth-controller.ts
+Create a function that sanitizes HTML input using an allowlist:
+- Allow only: b, i, u, strong, em, p, br, ul, ol, li, a, span
+- Remove all event handlers (onclick, onerror, onload, etc.)
+- Validate href attributes: only allow http:, https:, mailto:
+- Remove script, iframe, object, embed tags completely
 
-Refactor this authentication controller to fix these issues:
-1. Add password hashing using bcrypt (cost factor 12)
-2. Implement account lockout after 5 failed attempts for 30 minutes
-3. Generate secure session tokens using crypto.randomBytes(32)
-4. Remove passwords from logs and responses
-5. Use generic error messages to prevent user enumeration
-6. Add httpOnly, Secure, and SameSite flags to cookies
-
-Reference the secure implementation in:
-#file:src/secure/auth/auth-controller.ts
-
-Generate the complete refactored code.
+Return sanitized HTML string that Angular can safely bind.
 ```
 
-**Apply the changes using Copilot's "Apply in Editor" or inline suggestions.**
-
-### Verify Task 1
-
-Ask Copilot to verify:
+### Test Payloads
+```html
+<script>alert('XSS')</script>
+<img src=x onerror="alert('XSS')">
+<a href="javascript:alert('XSS')">click</a>
+<svg onload="alert('XSS')">
 ```
-Review my changes to auth-controller.ts.
-Confirm these security issues are fixed:
-- Password hashing
-- Account lockout
-- Secure cookies
-- No sensitive data in logs/responses
+
+### Verify
+```bash
+npm test -- --testPathPattern="html-sanitizer"
 ```
 
 ---
 
-## Task 2: Secure Payment Processing (10 min)
+## Task 2: Secure Authentication (15 min)
 
-**File:** `src/vulnerable/api/payment-handler.ts`
+### Goal
+Implement authentication without localStorage token storage
 
-**Copilot Chat Prompt:**
+### Files
+- Vulnerable: `src/app/vulnerable/services/auth.service.ts`
+- Secure: `src/app/secure/services/auth.service.ts`
+
+### AI Prompt
 ```
-#file:src/vulnerable/api/payment-handler.ts
-
-Fix these security issues in the payment handler:
-
-1. INPUT VALIDATION:
-   - Amount: positive number, max $1,000,000, 2 decimal places
-   - Currency: whitelist (USD, EUR, GBP only)
-   - Card token: validate format, never accept raw card numbers
-
-2. AUTHORIZATION:
-   - Verify user owns the transaction before refund
-   - Add role check for admin-only operations
-
-3. LOGGING:
-   - Remove all credit card data from logs
-   - Log security events without sensitive data
-
-4. WEBHOOK SECURITY:
-   - Add HMAC signature verification
-   - Validate timestamp to prevent replay attacks
-
-Reference: #file:src/secure/api/payment-handler.ts
-
-Generate the secure implementation.
+Refactor this Angular auth service to:
+1. Never store tokens in localStorage or sessionStorage
+2. Use HttpClient with withCredentials: true for cookie-based auth
+3. Keep user state in memory only (Angular signals)
+4. Never log passwords or tokens to console
+5. Implement server-side logout (POST /api/auth/logout)
+6. Validate session on app load (GET /api/auth/session)
 ```
 
-### Verify Task 2
+### Key Security Patterns
+```typescript
+// SECURE: HttpOnly cookie-based auth
+this.http.post('/api/auth/login', credentials, {
+  withCredentials: true  // Include cookies
+});
 
+// SECURE: User state in memory only
+private currentUserSignal = signal<User | null>(null);
+
+// SECURE: No credential logging
+// console.log() should never contain passwords
 ```
-Check my payment-handler.ts changes:
-- Is credit card data removed from all logs?
-- Are amounts properly validated?
-- Is webhook signature verification implemented?
+
+### Verify
+```bash
+npm test -- --testPathPattern="auth.service"
 ```
 
 ---
 
-## Task 3: Fix SQL Injection (8 min)
+## Task 3: URL Validation (10 min)
 
-**File:** `src/vulnerable/data/user-repository.ts`
+### Goal
+Prevent open redirect vulnerabilities
 
-**Copilot Chat Prompt:**
+### Files
+- Vulnerable: `src/app/vulnerable/components/redirect-handler/`
+- Secure: `src/app/secure/components/redirect-handler/`
+
+### AI Prompt
 ```
-#file:src/vulnerable/data/user-repository.ts
-
-Convert all SQL queries to use parameterized statements:
-
-1. findByEmail - use parameterized query
-2. searchUsers - use parameterized LIKE with validated ORDER BY
-3. findByQuery - whitelist allowed fields
-4. exportUsers - remove command injection (use programmatic export)
-5. getUserAvatar - add path traversal protection
-
-Show the vulnerable pattern and the secure replacement for each.
-
-Reference: #file:src/secure/data/user-repository.ts
+Create a validateRedirectUrl function that:
+1. Only allows internal paths from an allowlist: /, /dashboard, /profile, /settings
+2. Blocks javascript:, data:, vbscript: URLs
+3. Blocks protocol-relative URLs (//)
+4. Handles URL-encoded and double-encoded attacks
+5. Returns safe default path (/) if validation fails
+6. Decodes URLs before validation to catch encoded attacks
 ```
 
-### Verify Task 3
-
+### Test Payloads
 ```
-#file:src/vulnerable/data/user-repository.ts
+https://evil.com
+javascript:alert(1)
+data:text/html,<script>alert(1)</script>
+//evil.com
+%2F%2Fevil.com
+%252F%252Fevil.com
+```
 
-Are there any remaining injection vulnerabilities in this file?
-Check for SQL injection, command injection, and path traversal.
+### Verify
+```bash
+npm test -- --testPathPattern="url-validator"
 ```
 
 ---
 
-## Task 4: Fix SSRF and Access Control (7 min)
+## Task 4: CSRF Protection (10 min)
 
-**File:** `src/vulnerable/api/resource-controller.ts`
+### Goal
+Configure Angular XSRF handling
 
-**Copilot Chat Prompt:**
+### Files
+- Secure: `src/app/secure/components/csrf-demo/`
+- Config: `src/app/app.config.ts`
+
+### AI Prompt
 ```
-#file:src/vulnerable/api/resource-controller.ts
+Show how to configure Angular's HttpClient for CSRF protection:
+1. Use withXsrfConfiguration() in app.config.ts
+2. Set cookie name: XSRF-TOKEN
+3. Set header name: X-XSRF-TOKEN
+4. Ensure all state-changing operations use POST/PUT/DELETE
 
-Fix these critical vulnerabilities:
+Also show server-side cookie settings needed.
+```
 
-1. SSRF PREVENTION:
-   - Add URL allowlist for external fetches
-   - Block internal IP ranges (10.x, 172.16.x, 192.168.x, 169.254.x)
-   - Only allow HTTPS
-   - Disable redirect following
+### Key Configuration
+```typescript
+// app.config.ts
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideHttpClient(
+      withXsrfConfiguration({
+        cookieName: 'XSRF-TOKEN',
+        headerName: 'X-XSRF-TOKEN'
+      })
+    )
+  ]
+};
+```
 
-2. AUTHORIZATION:
-   - Add authentication check to all endpoints
-   - Verify resource ownership before access
-   - Log authorization failures
+### Verify
+```bash
+npm test -- --testPathPattern="csrf-protection"
+```
 
-3. OPEN REDIRECT:
-   - Validate redirect URLs against allowlist
-   - Only allow relative URLs or trusted domains
+---
 
-4. CORS:
-   - Replace wildcard with specific allowed origins
-   - Remove credentials from wildcard CORS
+## Task 5: Data Protection (10 min)
 
-Reference: #file:src/secure/api/resource-controller.ts
+### Goal
+Protect sensitive data from exposure
+
+### Files
+- Vulnerable: `src/app/vulnerable/components/data-exposure/`
+- Secure: `src/app/secure/components/data-exposure/`
+
+### AI Prompt
+```
+Create utility functions for sensitive data handling:
+
+1. maskCreditCard(card: string): string
+   - Return: ****-****-****-1234 (show last 4 only)
+
+2. maskSSN(ssn: string): string
+   - Return: ***-**-6789 (show last 4 only)
+
+3. maskEmail(email: string): string
+   - Return: j***e@example.com (first/last char of local part)
+
+4. safeLog(data: object): void
+   - Automatically redact fields: password, ssn, creditCard, token
+   - Log only safe fields
+```
+
+### Key Patterns
+```typescript
+// SECURE: Mask sensitive data
+function maskCreditCard(card: string): string {
+  const digits = card.replace(/\D/g, '');
+  return `****-****-****-${digits.slice(-4)}`;
+}
+
+// SECURE: Never log sensitive data
+console.log('Payment:', { cardLast4: '1234', amount: 100 });
+// NOT: console.log('Payment:', { card: '4111111111111111' });
+```
+
+### Verify
+```bash
+npm test -- --testPathPattern="data-protection"
 ```
 
 ---
 
 ## Final Verification
 
-### Run Build
-
-Ask Copilot:
-```
-#runInTerminal npm run build
+### Run All Tests
+```bash
+npm test
 ```
 
-### Security Review
+### Expected Results
+All security tests should pass:
+- `html-sanitizer.spec.ts`
+- `url-validator.spec.ts`
+- `csrf-protection.spec.ts`
+- `data-protection.spec.ts`
+- `auth.service.spec.ts`
 
-**Copilot Chat Prompt:**
+---
+
+## AI Prompting Tips
+
+### Be Specific About Security
 ```
-@workspace Review all files in src/vulnerable/ that I modified.
-For each file, confirm:
-1. Original vulnerabilities are fixed
-2. No new vulnerabilities introduced
-3. Code follows OWASP secure coding guidelines
+❌ "Make this secure"
+✅ "Validate URLs to prevent open redirect. Block javascript: and data: protocols. Only allow paths from allowlist: [/dashboard, /profile]"
+```
 
-List any remaining issues.
+### Include Attack Context
+```
+❌ "Sanitize HTML"
+✅ "Sanitize user HTML for comments. Allow b/i/a tags. Remove all event handlers and javascript: URLs to prevent XSS."
+```
+
+### Request Verification
+```
+✅ "...and explain what XSS attacks this prevents"
+✅ "...and show test cases for common attack payloads"
 ```
 
 ---
 
-## Success Criteria
+## Security Review Checklist
 
-Your fixes should address:
+After implementing fixes, verify:
 
-| Category | Requirements | Verified |
-|----------|--------------|----------|
-| Authentication | bcrypt, lockout, secure tokens | ☐ |
-| Input Validation | Amount, currency, card validation | ☐ |
-| Authorization | Ownership checks, role verification | ☐ |
-| Injection | Parameterized queries, no concatenation | ☐ |
-| SSRF | URL allowlist, block internal IPs | ☐ |
-| Logging | No sensitive data in logs | ☐ |
-| Webhooks | Signature verification | ☐ |
-
----
-
-## Compare with Solutions
-
-After completing the lab, compare your implementations with:
-- `src/secure/auth/auth-controller.ts`
-- `src/secure/api/payment-handler.ts`
-- `src/secure/data/user-repository.ts`
-- `src/secure/api/resource-controller.ts`
+- [ ] No sensitive data in console.log
+- [ ] No tokens in localStorage/sessionStorage
+- [ ] URL parameters validated before use
+- [ ] HTML sanitized with allowlist
+- [ ] XSRF configured for state-changing requests
+- [ ] HttpOnly cookies for session tokens
+- [ ] No secrets in environment.ts
+- [ ] Tests cover attack scenarios
 
 ---
 
-## Bonus Challenge
+## Bonus Challenges
 
-If time permits, fix the JWT vulnerabilities:
-
+### 1. Content Security Policy
 ```
-#file:src/vulnerable/session/token-manager.ts
-
-Fix the JWT security issues:
-1. Reject 'none' algorithm
-2. Use cryptographically secure secret
-3. Add token expiration
-4. Implement refresh token rotation
-
-Reference: #file:src/secure/session/token-manager.ts
+Configure CSP headers to prevent inline scripts:
+default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';
 ```
+
+### 2. Subresource Integrity
+```
+Add integrity attributes to external scripts/styles
+```
+
+### 3. Security Headers
+```
+X-Frame-Options: DENY
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+```
+
+---
+
+## Conclusion
+
+This lab demonstrated secure Angular patterns:
+
+1. **HTML Sanitization**: Allowlist approach, no bypassSecurityTrust
+2. **Token Storage**: HttpOnly cookies, not localStorage
+3. **URL Validation**: Allowlist paths, block dangerous protocols
+4. **CSRF Protection**: Angular XSRF module, SameSite cookies
+5. **Data Protection**: Mask sensitive data, safe logging
+
+AI assistance is powerful but requires human verification of security patterns.

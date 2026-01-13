@@ -1,138 +1,164 @@
-# Lab 1: Vulnerability Identification with GitHub Copilot
+# Lab 1: Angular Security Vulnerability Identification
 
-**Duration:** 30 minutes
-**Objective:** Use GitHub Copilot to identify security vulnerabilities in intentionally vulnerable code.
+**Duration:** 30-45 minutes
+**Objective:** Identify security vulnerabilities in Angular components using AI assistance (GitHub Copilot or Claude).
 
 ---
 
 ## Prerequisites
 
-- GitHub Copilot extension installed and active
-- Lab repository open in VS Code
-- Reference: `docs/owasp-reference/top-10-summary.md`
+- GitHub Copilot or Claude Code extension installed
+- Lab environment running (`ng serve`)
+- Browser DevTools knowledge
 
 ---
 
-## Important: Copilot-Only Workflow
+## Important: AI-Assisted Workflow
 
-All lab work must be completed using GitHub Copilot. Use these methods:
-
+Use AI assistance for analysis:
 1. **Copilot Chat** (`Ctrl+Shift+I` / `Cmd+Shift+I`)
-2. **Inline suggestions** (type comments starting with `//`)
-3. **Terminal commands** via Copilot: `#runInTerminal npm audit`
-
-**Do NOT manually type code or terminal commands.**
+2. **Claude Code** or other AI assistants
+3. Reference: Open vulnerable components for analysis
 
 ---
 
-## Files to Analyze (Priority Order)
+## Files to Analyze
 
-| # | File | Time | Expected Issues |
-|---|------|------|-----------------|
-| 1 | `src/vulnerable/auth/auth-controller.ts` | 8 min | 8-10 |
-| 2 | `src/vulnerable/api/payment-handler.ts` | 7 min | 6-8 |
-| 3 | `src/vulnerable/data/user-repository.ts` | 7 min | 4-5 |
-| 4 | `src/vulnerable/api/resource-controller.ts` | 8 min | 5-6 |
+| # | Component | Route | Time | Focus Areas |
+|---|-----------|-------|------|-------------|
+| 1 | xss-bypass | /vulnerable/xss-bypass | 8 min | DomSanitizer bypass |
+| 2 | xss-innerhtml | /vulnerable/xss-innerhtml | 7 min | innerHTML binding |
+| 3 | auth service | /vulnerable/auth | 7 min | Token storage, logging |
+| 4 | csrf-demo | /vulnerable/csrf | 5 min | XSRF configuration |
+| 5 | redirect-handler | /vulnerable/redirect | 5 min | URL validation |
+| 6 | data-exposure | /vulnerable/data-exposure | 5 min | Sensitive data |
 
 ---
 
 ## Step-by-Step Instructions
 
-### Step 1: Open Copilot Chat (2 min)
+### Step 1: XSS via bypassSecurityTrust (8 min)
 
-Open Copilot Chat panel. Use the prompt:
+1. Navigate to `http://localhost:4200/vulnerable/xss-bypass`
+2. Open `src/app/vulnerable/components/xss-bypass/xss-bypass.component.ts`
 
+**AI Prompt:**
 ```
-@workspace I'm analyzing this codebase for OWASP Top 10 vulnerabilities.
-The vulnerable code is in src/vulnerable/.
-List all the files I should analyze.
-```
+Analyze this Angular component for XSS vulnerabilities.
+Focus on:
+- Usage of DomSanitizer.bypassSecurityTrust*() methods
+- How user input flows to the sanitizer
+- What attack payloads would work
 
-### Step 2: Analyze auth-controller.ts (8 min)
-
-Open `src/vulnerable/auth/auth-controller.ts`
-
-**Copilot Chat Prompt:**
-```
-Analyze this file for security vulnerabilities. For each issue found:
-1. OWASP category (A01-A10)
-2. CWE number
-3. Severity (Critical/High/Medium/Low)
-4. Line number(s)
-5. Attack scenario (one sentence)
-6. Fix recommendation
-
-Focus on: authentication, access control, cryptography, and logging.
+For each issue: OWASP category, severity, line numbers, attack scenario.
 ```
 
-**Document your findings** in the response template below.
+**Test the vulnerability:**
+- Click attack payload buttons in the UI
+- Check browser console for XSS execution
 
-### Step 3: Analyze payment-handler.ts (7 min)
+### Step 2: XSS via innerHTML (7 min)
 
-Open `src/vulnerable/api/payment-handler.ts`
+1. Navigate to `/vulnerable/xss-innerhtml`
+2. Open `src/app/vulnerable/components/xss-innerhtml/xss-innerhtml.component.ts`
 
-**Copilot Chat Prompt:**
+**AI Prompt:**
 ```
-Review this payment handler for security issues:
-- Input validation vulnerabilities
-- Authorization flaws
-- PCI compliance violations
-- Data integrity issues
+Review this component for innerHTML-related XSS:
+- Stored XSS in comments
+- Reflected XSS via URL parameters
+- What sanitization is missing?
 
-For each issue: OWASP category, severity, line, attack, fix.
-```
-
-### Step 4: Analyze user-repository.ts (7 min)
-
-Open `src/vulnerable/data/user-repository.ts`
-
-**Copilot Chat Prompt:**
-```
-Identify injection vulnerabilities in this file:
-- SQL injection
-- Command injection
-- Path traversal
-- NoSQL injection
-
-Show the vulnerable code pattern and the secure alternative.
+Show attack payloads for each vector.
 ```
 
-### Step 5: Analyze resource-controller.ts (6 min)
+**Test:**
+- Post a comment with: `<img src=x onerror="alert('XSS')">`
+- Try URL: `?q=<script>alert(1)</script>`
 
-Open `src/vulnerable/api/resource-controller.ts`
+### Step 3: Authentication Vulnerabilities (7 min)
 
-**Copilot Chat Prompt:**
+1. Navigate to `/vulnerable/auth`
+2. Open `src/app/vulnerable/services/auth.service.ts`
+
+**AI Prompt:**
 ```
-Check this controller for:
-- SSRF (Server-Side Request Forgery)
-- Open redirect
-- CORS misconfiguration
-- Missing authorization
+Identify authentication security issues:
+- Where are tokens stored?
+- What gets logged to console?
+- How is the user's role determined?
+- What could an XSS attack steal?
 
-Explain how each vulnerability could be exploited.
+List OWASP categories for each issue.
+```
+
+**Test:**
+- Log in with demo credentials
+- Click "Simulate XSS Token Theft"
+- Check DevTools → Application → Local Storage
+
+### Step 4: CSRF/XSRF Issues (5 min)
+
+1. Navigate to `/vulnerable/csrf`
+2. Review component and app.config.ts
+
+**AI Prompt:**
+```
+Check for CSRF vulnerabilities:
+- Is withXsrfConfiguration() used?
+- Are state-changing operations using POST?
+- What SameSite cookie configuration is needed?
+
+Explain how a CSRF attack would work here.
+```
+
+### Step 5: Open Redirect (5 min)
+
+1. Navigate to `/vulnerable/redirect`
+2. Open `src/app/vulnerable/components/redirect-handler/redirect-handler.component.ts`
+
+**AI Prompt:**
+```
+Analyze for open redirect vulnerabilities:
+- How is returnUrl validated?
+- What protocols are blocked?
+- How could this be used for phishing?
+
+List attack payloads that would work.
+```
+
+### Step 6: Data Exposure (5 min)
+
+1. Navigate to `/vulnerable/data-exposure`
+2. Check `src/environments/environment.ts`
+
+**AI Prompt:**
+```
+Find sensitive data exposure issues:
+- What's in environment.ts that shouldn't be?
+- What gets logged to console?
+- What's stored in localStorage?
+
+Rate severity of each exposure.
 ```
 
 ---
 
 ## Response Template
 
-### File: auth-controller.ts
+### Component: xss-bypass
 
 | # | OWASP | Severity | Line | Description |
 |---|-------|----------|------|-------------|
 | 1 | | | | |
 | 2 | | | | |
-| 3 | | | | |
-
-**Most Critical Issue:**
-
 
 **Attack Scenario:**
 
 
 ---
 
-### File: payment-handler.ts
+### Component: xss-innerhtml
 
 | # | OWASP | Severity | Line | Description |
 |---|-------|----------|------|-------------|
@@ -141,7 +167,7 @@ Explain how each vulnerability could be exploited.
 
 ---
 
-### File: user-repository.ts
+### Service: auth.service
 
 | # | OWASP | Severity | Line | Description |
 |---|-------|----------|------|-------------|
@@ -150,45 +176,77 @@ Explain how each vulnerability could be exploited.
 
 ---
 
-### File: resource-controller.ts
+### Component: csrf-demo
 
 | # | OWASP | Severity | Line | Description |
 |---|-------|----------|------|-------------|
 | 1 | | | | |
-| 2 | | | | |
 
 ---
 
-## Summary Questions
+### Component: redirect-handler
 
-Use Copilot to answer:
-
-```
-Based on the vulnerabilities found in src/vulnerable/,
-what are the top 5 most critical security issues that
-should be fixed first? Explain why each is critical.
-```
+| # | OWASP | Severity | Line | Description |
+|---|-------|----------|------|-------------|
+| 1 | | | | |
 
 ---
 
-## Bonus: Run Security Audit (if time permits)
+### Component: data-exposure
 
-Ask Copilot to run a dependency audit:
+| # | OWASP | Severity | Line | Description |
+|---|-------|----------|------|-------------|
+| 1 | | | | |
 
-```
-#runInTerminal npm audit
+---
+
+## Angular Security Patterns to Identify
+
+### XSS Vulnerabilities
+```typescript
+// Dangerous patterns - look for these:
+this.sanitizer.bypassSecurityTrustHtml(userInput)
+this.sanitizer.bypassSecurityTrustUrl(userInput)
+[innerHTML]="userInput"
+element.nativeElement.innerHTML = userInput
 ```
 
-Then ask Copilot:
+### Authentication Issues
+```typescript
+// Dangerous patterns:
+localStorage.setItem('token', jwt)
+console.log('Password:', password)
+const role = decodedToken.role  // Client-side role check
 ```
-Explain the npm audit results and which vulnerabilities
-are most concerning.
+
+### CSRF Red Flags
+```typescript
+// Missing XSRF configuration:
+provideHttpClient()  // Should use withXsrfConfiguration()
+
+// GET for state changes:
+this.http.get('/api/delete/' + id)  // Should be DELETE
+```
+
+### Data Exposure
+```typescript
+// Environment file secrets:
+apiKey: 'sk_live_...'  // Never in frontend code!
+
+// Console logging sensitive data:
+console.log('Credit Card:', cardNumber)
 ```
 
 ---
 
 ## Validation
 
-Compare your findings with `exercises/lab1-identification/answer-key.md`
+Compare your findings with `answer-key.md`
 
-**Target:** Find at least 15 vulnerabilities across all files.
+**Target:** Find at least 10 vulnerabilities across all components.
+
+---
+
+## Next Steps
+
+After completing this lab, proceed to Lab 2: Threat Modeling.

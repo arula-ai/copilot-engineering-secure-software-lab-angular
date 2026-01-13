@@ -1,229 +1,190 @@
-# Copilot Secure Development Lab
+# Angular Security Lab
 
-**Workshop:** Secure Software Development with GitHub Copilot
-**Duration:** 90 minutes
-**Audience:** Engineers advancing secure coding skills
-**Stack:** Node.js, TypeScript, Express
+A hands-on Angular 19 security training lab for learning frontend security vulnerabilities and their mitigations. This lab demonstrates OWASP Top 10 vulnerabilities specific to Angular applications.
 
----
+## Overview
 
-## WARNING
+This lab provides side-by-side examples of **vulnerable** and **secure** Angular components, allowing you to:
 
-This repository contains **intentionally vulnerable code** for educational purposes.
+- Identify common frontend security vulnerabilities
+- Understand how attacks work in practice
+- Learn secure coding patterns for Angular applications
+- Practice fixing vulnerabilities with AI assistance (GitHub Copilot)
 
-**DO NOT:**
-- Deploy this code to production
-- Use vulnerable patterns in real applications
-- Copy code without fixing vulnerabilities
+## Vulnerabilities Covered
 
----
+| Vulnerability | OWASP Category | Components |
+|--------------|----------------|------------|
+| XSS via `bypassSecurityTrustHtml()` | A03: Injection | xss-bypass |
+| XSS via `[innerHTML]` binding | A03: Injection | xss-innerhtml |
+| XSS via URL/DOM manipulation | A03: Injection | xss-interpolation |
+| JWT in localStorage (XSS accessible) | A02: Crypto Failures | auth service, login-form |
+| Missing CSRF/XSRF protection | A01: Access Control | csrf-demo |
+| Open redirect vulnerabilities | A01: Access Control | redirect-handler |
+| Sensitive data exposure | A02: Crypto Failures | data-exposure |
 
-## Copilot-Only Workflow
+## Quick Start
 
-**All lab work must be completed using GitHub Copilot.** This ensures you learn to leverage AI for security tasks.
+### Prerequisites
 
-### How to Use Copilot in This Lab
+- Node.js 18+ and npm
+- Angular CLI (`npm install -g @angular/cli`)
 
-1. **Copilot Chat** (`Ctrl+Shift+I` / `Cmd+Shift+I`)
-   - Analyze code for vulnerabilities
-   - Generate secure implementations
-   - Create threat models
+### Installation
 
-2. **Inline Suggestions**
-   - Type comments starting with `//` to get suggestions
-   - Accept suggestions with `Tab`
+```bash
+# Clone the repository
+git clone https://github.com/arula-ai/copilot-engineering-secure-software-lab-angular.git
+cd copilot-engineering-secure-software-lab-angular
 
-3. **Terminal Commands**
-   - Use `#runInTerminal` in Copilot Chat
-   - Example: `#runInTerminal npm audit`
+# Install dependencies
+npm install
 
-4. **File References**
-   - Use `#file:path/to/file.ts` to include context
-   - Use `@workspace` for project-wide queries
-
-**Do NOT manually type code or terminal commands.**
-
----
-
-## Getting Started
-
-```
-# Clone and install (via Copilot Chat)
-#runInTerminal npm install
-
-# Build the project
-#runInTerminal npm run build
-
-# Run tests
-#runInTerminal npm test
+# Start the development server
+ng serve
 ```
 
----
+Open http://localhost:4200 to view the lab.
 
-## Lab Structure (90 minutes)
+### Running the Mock Server (Optional)
 
-| Time | Lab | Duration | Focus |
-|------|-----|----------|-------|
-| 0:00 | **Lab 1:** Vulnerability Identification | 30 min | Find OWASP Top 10 issues |
-| 0:30 | **Lab 2:** Threat Modeling | 25 min | Create STRIDE threat model |
-| 0:55 | **Lab 3:** Secure Implementation | 35 min | Fix vulnerabilities |
+For endpoints that demonstrate HTTP-based vulnerabilities:
 
----
-
-## Repository Structure
-
-```
-copilot-secure-dev-lab/
-├── src/
-│   ├── vulnerable/           # Intentionally vulnerable code
-│   │   ├── auth/             # Authentication vulnerabilities
-│   │   ├── api/              # API vulnerabilities
-│   │   ├── data/             # Injection vulnerabilities
-│   │   ├── session/          # JWT/session vulnerabilities
-│   │   └── dependencies/     # A06: Vulnerable components
-│   └── secure/               # Reference implementations
-│       ├── auth/             # Secure auth patterns
-│       ├── api/              # Secure API patterns
-│       ├── data/             # Secure data patterns
-│       ├── session/          # Secure JWT patterns
-│       └── __tests__/        # Security verification tests
-├── exercises/
-│   ├── lab1-identification/  # Vulnerability hunting
-│   ├── lab2-threat-model/    # STRIDE analysis
-│   └── lab3-implementation/  # Fixing vulnerabilities
-├── threat-models/
-│   ├── templates/            # STRIDE template
-│   └── examples/             # Completed threat model
-└── docs/
-    ├── owasp-reference/      # OWASP Top 10 quick reference
-    └── checklists/           # Security review checklist
+```bash
+npm run mock-server
 ```
 
----
+The mock server runs on http://localhost:3001.
 
-## OWASP Top 10 Coverage
+### Running Tests
 
-| Category | Vulnerable Files | Secure Reference |
-|----------|-----------------|------------------|
-| A01: Access Control | auth-controller.ts, resource-controller.ts | secure/auth/, secure/api/ |
-| A02: Cryptography | password-handler.ts, token-manager.ts | secure/auth/, secure/session/ |
-| A03: Injection | user-repository.ts, query-builder.ts | secure/data/ |
-| A04: Insecure Design | payment-handler.ts | secure/api/payment-handler.ts |
-| A05: Misconfiguration | user-api.ts | secure/api/user-api.ts |
-| A06: Vulnerable Components | vulnerable-deps.ts | npm audit |
-| A07: Authentication | auth-controller.ts, session-manager.ts | secure/auth/ |
-| A08: Integrity Failures | token-manager.ts, payment-handler.ts | secure/session/, secure/api/ |
-| A09: Logging Failures | auth-controller.ts, payment-handler.ts | secure/auth/, secure/api/ |
-| A10: SSRF | resource-controller.ts, file-handler.ts | secure/api/, secure/data/ |
+```bash
+# Run all tests
+npm test
 
----
+# Run tests in watch mode
+npm run test:watch
+```
 
-## Quick Start for Each Lab
+## Project Structure
+
+```
+src/app/
+├── vulnerable/                 # Insecure implementations
+│   ├── components/
+│   │   ├── xss-bypass/        # XSS via bypassSecurityTrust
+│   │   ├── xss-innerhtml/     # XSS via innerHTML
+│   │   ├── xss-interpolation/ # XSS via URL/DOM
+│   │   ├── login-form/        # Insecure auth
+│   │   ├── csrf-demo/         # Missing CSRF
+│   │   ├── redirect-handler/  # Open redirect
+│   │   └── data-exposure/     # Sensitive data leaks
+│   └── services/
+│       └── auth.service.ts    # JWT in localStorage
+│
+├── secure/                     # Secure implementations
+│   ├── components/            # Secure counterparts
+│   ├── services/
+│   │   └── auth.service.ts    # HttpOnly cookies
+│   └── utils/                 # Security utilities + tests
+│
+├── shared/
+│   └── components/
+│       └── home/              # Lab homepage
+│
+└── app.routes.ts              # Navigation routes
+```
+
+## Lab Exercises
 
 ### Lab 1: Vulnerability Identification
+Navigate to `/vulnerable/*` components and identify security issues. Use the sidebar navigation to explore each vulnerability type.
 
-Open: `exercises/lab1-identification/instructions.md`
-
-```
-# Copilot Chat prompt to start:
-@workspace I'm analyzing this codebase for OWASP Top 10 vulnerabilities.
-The vulnerable code is in src/vulnerable/.
-List all the files I should analyze and the expected vulnerabilities in each.
-```
+See: `exercises/lab1-identification/instructions.md`
 
 ### Lab 2: Threat Modeling
+Create threat models for the vulnerable components using STRIDE methodology.
 
-Open: `exercises/lab2-threat-model/instructions.md`
-
-```
-# Copilot Chat prompt to start:
-Create a STRIDE threat model for an authentication and payment system.
-The system includes: Auth Controller, Payment Handler, Session Manager.
-Generate a Mermaid architecture diagram and identify threats for each STRIDE category.
-```
+See: `exercises/lab2-threat-model/instructions.md`
 
 ### Lab 3: Secure Implementation
+Use GitHub Copilot to help fix vulnerabilities in the secure components.
 
-Open: `exercises/lab3-implementation/instructions.md`
+See: `exercises/lab3-implementation/instructions.md`
 
-```
-# Copilot Chat prompt to start:
-#file:src/vulnerable/auth/auth-controller.ts
-Refactor this code to fix all security vulnerabilities.
-Use patterns from #file:src/secure/auth/auth-controller.ts as reference.
-```
+## Angular Security Concepts Demonstrated
 
----
+### XSS Prevention
+- Angular's built-in sanitization
+- When NOT to use `bypassSecurityTrustHtml()`
+- Safe alternatives to `innerHTML`
+- URL validation and sanitization
 
-## Verification
+### Authentication Security
+- HttpOnly cookies vs localStorage for tokens
+- Session management best practices
+- Credential handling (never log passwords)
 
-### Run Security Tests
+### CSRF Protection
+- Angular's `HttpClientXsrfModule`
+- SameSite cookie configuration
+- Proper HTTP methods for state changes
 
-```
-#runInTerminal npm test
-```
+### Data Protection
+- Environment file security
+- Masking sensitive data
+- Console logging best practices
 
-### Run Dependency Audit
+## Available Routes
 
-```
-#runInTerminal npm audit
-```
+| Route | Description |
+|-------|-------------|
+| `/` | Lab homepage |
+| `/vulnerable/xss-bypass` | XSS via bypassSecurityTrust |
+| `/vulnerable/xss-innerhtml` | XSS via innerHTML |
+| `/vulnerable/xss-interpolation` | XSS via URL handling |
+| `/vulnerable/auth` | Insecure authentication |
+| `/vulnerable/csrf` | Missing CSRF protection |
+| `/vulnerable/redirect` | Open redirect |
+| `/vulnerable/data-exposure` | Sensitive data exposure |
+| `/secure/xss-bypass` | Secure HTML handling |
+| `/secure/xss-innerhtml` | Safe innerHTML alternative |
+| `/secure/xss-interpolation` | Safe URL handling |
+| `/secure/auth` | Secure authentication |
+| `/secure/csrf` | CSRF protected |
+| `/secure/redirect` | Safe redirect handling |
+| `/secure/data-exposure` | Data protection |
 
-### Build Project
+## Security Testing
 
-```
-#runInTerminal npm run build
-```
+The lab includes Jest tests that verify secure patterns:
 
----
-
-## Key Resources
-
-| Resource | Location |
-|----------|----------|
-| OWASP Top 10 Reference | `docs/owasp-reference/top-10-summary.md` |
-| Security Checklist | `docs/checklists/security-review-checklist.md` |
-| STRIDE Template | `threat-models/templates/stride-template.md` |
-| Completed Threat Model | `threat-models/examples/auth-payment-system-threat-model.md` |
-| Lab 1 Answer Key | `exercises/lab1-identification/answer-key.md` |
-| Secure Implementations | `src/secure/` |
-
----
-
-## Helpful Copilot Prompts
-
-### Security Analysis
-```
-Analyze this file for OWASP Top 10 vulnerabilities.
-For each issue: OWASP category, severity, line number, attack scenario, fix.
-```
-
-### Threat Modeling
-```
-Perform STRIDE analysis for this system.
-Identify threats for each category with impact and mitigation.
+```bash
+# Run security tests
+npm test
 ```
 
-### Secure Refactoring
-```
-Refactor this code to follow secure coding practices.
-Add: input validation, authorization, secure logging, parameterized queries.
-```
+Test files are located in `src/app/secure/utils/*.spec.ts` and cover:
+- URL validation
+- HTML sanitization
+- CSRF protection
+- Data masking
+- Authentication patterns
 
-### Code Review
-```
-Review this code against the security checklist.
-Flag any violations with severity and recommended fix.
-```
+## Contributing
 
----
+Contributions are welcome! Please ensure any new vulnerabilities include:
+1. A vulnerable component demonstrating the issue
+2. A secure component showing the fix
+3. Tests verifying the secure implementation
+4. Documentation in the component comments
 
-## Support
+## License
 
-- **Documentation:** See `docs/` directory
-- **Reference Code:** See `src/secure/` directory
-- **Answer Keys:** See exercise directories
+MIT License - See LICENSE file for details.
 
----
+## References
 
-**Remember:** Security is everyone's responsibility. Use Copilot as a tool, but verify all suggestions.
+- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
+- [Angular Security Guide](https://angular.io/guide/security)
+- [OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/)

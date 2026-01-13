@@ -1,0 +1,53 @@
+<div class="app-container">
+  <header class="header">
+    <h1>{{ title }}</h1>
+    <span class="subtitle">Angular 19 Frontend Security Training</span>
+  </header>
+
+  <div class="main-content">
+    <nav class="sidebar">
+      <div class="nav-section">
+        <h3 class="nav-header vulnerable-header">VULNERABLE</h3>
+        <p class="nav-description">Intentionally insecure code for learning</p>
+        <ul class="nav-list">
+          @for (item of vulnerableItems; track item.path) {
+            <li>
+              <a [routerLink]="item.path"
+                 routerLinkActive="active"
+                 class="nav-link vulnerable">
+                <span class="nav-label">{{ item.label }}</span>
+                <span class="nav-badge">{{ item.description }}</span>
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <h3 class="nav-header secure-header">SECURE</h3>
+        <p class="nav-description">Reference implementations</p>
+        <ul class="nav-list">
+          @for (item of secureItems; track item.path) {
+            <li>
+              <a [routerLink]="item.path"
+                 routerLinkActive="active"
+                 class="nav-link secure">
+                <span class="nav-label">{{ item.label }}</span>
+                <span class="nav-badge">{{ item.description }}</span>
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+    </nav>
+
+    <main class="content">
+      <router-outlet />
+    </main>
+  </div>
+
+  <footer class="footer">
+    <p>Use GitHub Copilot to analyze vulnerabilities and implement secure patterns.</p>
+    <p class="warning">DO NOT use vulnerable patterns in production code.</p>
+  </footer>
+</div>

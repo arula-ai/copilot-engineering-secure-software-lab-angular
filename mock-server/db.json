@@ -1,0 +1,43 @@
+{
+  "users": [
+    {
+      "id": "usr_001",
+      "email": "user@example.com",
+      "name": "Demo User",
+      "role": "user"
+    },
+    {
+      "id": "usr_002",
+      "email": "admin@example.com",
+      "name": "Admin User",
+      "role": "admin"
+    }
+  ],
+  "comments": [
+    {
+      "id": "cmt_001",
+      "author": "Alice",
+      "body": "Great article! Really helpful.",
+      "date": "2024-01-10",
+      "userId": "usr_001"
+    },
+    {
+      "id": "cmt_002",
+      "author": "Bob",
+      "body": "Thanks for sharing this information.",
+      "date": "2024-01-11",
+      "userId": "usr_002"
+    }
+  ],
+  "transfers": [
+    {
+      "id": "txn_001",
+      "from": "usr_001",
+      "to": "usr_002",
+      "amount": 100,
+      "status": "completed",
+      "date": "2024-01-15"
+    }
+  ],
+  "sessions": []
+}

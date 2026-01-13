@@ -1,0 +1,139 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.header {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.subtitle {
+  color: #888;
+  font-size: 0.875rem;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+}
+
+.sidebar {
+  width: 280px;
+  background: #f8f9fa;
+  border-right: 1px solid #e0e0e0;
+  overflow-y: auto;
+  padding: 1rem 0;
+}
+
+.nav-section {
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.nav-header {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.25rem 0;
+  padding: 0.5rem 0;
+}
+
+.vulnerable-header {
+  color: #dc3545;
+}
+
+.secure-header {
+  color: #28a745;
+}
+
+.nav-description {
+  font-size: 0.75rem;
+  color: #666;
+  margin: 0 0 0.75rem 0;
+}
+
+.nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-list li {
+  margin-bottom: 0.25rem;
+}
+
+.nav-link {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #333;
+  transition: all 0.15s ease;
+}
+
+.nav-link:hover {
+  background: #e9ecef;
+}
+
+.nav-link.active {
+  font-weight: 500;
+}
+
+.nav-link.vulnerable.active {
+  background: #fff5f5;
+  border-left: 3px solid #dc3545;
+}
+
+.nav-link.secure.active {
+  background: #f0fff4;
+  border-left: 3px solid #28a745;
+}
+
+.nav-label {
+  font-size: 0.875rem;
+}
+
+.nav-badge {
+  font-size: 0.7rem;
+  color: #888;
+  margin-top: 0.125rem;
+}
+
+.content {
+  flex: 1;
+  padding: 2rem;
+  background: white;
+  overflow-y: auto;
+}
+
+.footer {
+  background: #f8f9fa;
+  border-top: 1px solid #e0e0e0;
+  padding: 1rem 2rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.footer p {
+  margin: 0.25rem 0;
+}
+
+.footer .warning {
+  color: #dc3545;
+  font-weight: 500;
+}

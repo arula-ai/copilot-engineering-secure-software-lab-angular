@@ -6,16 +6,16 @@ Follow these lean steps using GitHub Copilot for all work. Each lab builds on th
 
 | Lab | Duration | Primary Actions | Core Artifacts / Commands |
 | --- | --- | --- | --- |
-| Setup | 5 min | `#runInTerminal npm install`, `#runInTerminal npm run build` | `package.json`, `tsconfig.json` |
+| Setup | 5 min | `npm install`, `npm run build` (run in terminal) | `package.json`, `tsconfig.json` |
 | 1 | 30 min | Analyze `src/vulnerable/**`, document findings | `exercises/lab1-identification/answer-key.md` |
 | 2 | 25 min | STRIDE analysis, architecture diagram | `threat-models/my-threat-model.md` |
-| 3 | 35 min | Refactor vulnerable code, run tests | `src/vulnerable/**`, `#runInTerminal npm test` |
-| Verify | 5 min | `#runInTerminal npm run build`, `#runInTerminal npm test` | Final validation |
+| 3 | 35 min | Refactor vulnerable code, run tests | `src/vulnerable/**`, `npm test` (run in terminal) |
+| Verify | 5 min | `npm run build`, `npm test` (run in terminal) | Final validation |
 
 ## Setup – Environment Preparation
 
-- Copilot Chat: `#runInTerminal npm install`
-- Copilot Chat: `#runInTerminal npm run build`
+- Run `npm install` in your terminal
+- Run `npm run build` in your terminal
 - Verify no build errors before proceeding
 - Open `README.md` to review lab structure
 
@@ -105,7 +105,7 @@ Refactor this authentication controller to fix:
 Reference: #file:src/secure/auth/auth-controller.ts
 ```
 - Apply changes using Copilot's "Apply in Editor"
-- Verify with: `#runInTerminal npm run build`
+- Run `npm run build` in your terminal to verify
 
 ### Task 2: Secure Payment Processing (10 min)
 - Copilot Chat:
@@ -152,8 +152,8 @@ Reference: #file:src/secure/api/resource-controller.ts
 
 ## Final Verification
 
-- Copilot Chat: `#runInTerminal npm run build`
-- Copilot Chat: `#runInTerminal npm test`
+- Run `npm run build` in your terminal
+- Run `npm test` in your terminal
 - Copilot Chat:
 ```
 @workspace Review all files in src/vulnerable/ that were modified.
@@ -217,6 +217,8 @@ Flag any violations with severity and recommended fix.
 
 ## Reminder
 
-- **All work via Copilot**: Use `#runInTerminal` for commands, `#file:` for context, `@workspace` for project-wide queries
-- **No manual typing**: Let Copilot generate all code and terminal commands
+- **Use Copilot for meaningful tasks**: Security analysis, code generation, and review — not basic terminal commands
+- **Run build commands yourself**: `npm install`, `npm run build`, `npm test` should be typed directly in the terminal
+- **Use `#file:` for context**: Add file references to your Copilot prompts for targeted analysis
+- **Use `@workspace` for project-wide queries**: Useful when reasoning across multiple files
 - **Verify suggestions**: Security is everyone's responsibility—review Copilot output before applying
